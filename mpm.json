@@ -1,0 +1,91 @@
+{
+  "BTC": {
+    "cmcid": 1,
+    "papid": "btc-bitcoin",
+    "bidmargin": 0.006,
+    "askmargin": 0.006,
+    "quantity": 0.1,
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10000"
+      },
+      {
+        "url": "electrum2.cipig.net:10000"
+      },
+      {
+        "url": "electrum1.cipig.net:10000"
+      }
+    ]
+  },
+  "KMD": {
+    "cmcid": 1521,
+    "papid": "kmd-komodo",
+    "bidmargin": 0.006,
+    "askmargin": 0.006,
+    "minmargin": 0.004,
+    "quantity": 250,
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10001"
+      },
+      {
+        "url": "electrum2.cipig.net:10001"
+      },
+      {
+        "url": "electrum1.cipig.net:10001"
+      }
+    ]
+  },
+  "MORTY": {
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10018"
+      },
+      {
+        "url": "electrum2.cipig.net:10018"
+      },
+      {
+        "url": "electrum1.cipig.net:10018"
+      }
+    ]
+  },
+  "RICK": {
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10017"
+      },
+      {
+        "url": "electrum2.cipig.net:10017"
+      },
+      {
+        "url": "electrum1.cipig.net:10017"
+      }
+    ]
+  },
+  "DGB": {
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10059"
+      },
+      {
+        "url": "electrum2.cipig.net:10059"
+      },
+      {
+        "url": "electrum1.cipig.net:10059"
+      }
+    ]
+  },
+  "DOGE": {
+    "servers": [
+      {
+        "url": "electrum3.cipig.net:10060"
+      },
+      {
+        "url": "electrum2.cipig.net:10060"
+      },
+      {
+        "url": "electrum1.cipig.net:10060"
+      }
+    ]
+  }
+}

@@ -3,17 +3,28 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prettier": "prettier --write server.js"
+    "prettier": "prettier --write server.js",
+    "start": "node .",
+    "server": "babel-node ./src/bin/www",
+    "dev": "NODE_ENV=development npm-run-all server"
   },
   "engines": {
     "node": "^10.15",
     "npm": "^2"
   },
   "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "curl-request": "^1.1.1",
+    "express": "^4.17.1",
+    "stdrpc": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "prettier": "^1.17.1"
   }
 }
