@@ -11,7 +11,7 @@ const bodyParser = require('body-parser')
 const axios = require('axios');
 const fs = require('fs');
 let liveConfig = fsGetConfig()
-const up = "WejAWqsSZWDacTaI4b1UpLwyGYvUefdE";
+const up = "yVBU9EO0bCaluY4mt23JBHg4fNR7qKAM";
 app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -219,6 +219,16 @@ app.post("/connectcoin", cors(), (req, res) => {
   })
 })
 
+app.options("/recentswaps", cors())
+app.get("/recentswaps", cors(), (req, res) => {
+  console.info("GET /recentswaps")
+  getRecentSwaps().then(data => {
+    console.log("return to client" + data)
+    // res.json(JSON.stringify(data))
+    res.json(data)
+  })
+})
+
 app.options("/getBalance", cors())
 app.get("/getBalance", cors(), (req, res) => {
   console.info("GET /getBalance " + req.query.coin)
@@ -229,9 +239,43 @@ app.get("/getBalance", cors(), (req, res) => {
   })
 })
 
+app.options("/doTaker", cors())
+app.post("/doTaker", cors(), (req, res) => {
+  let base = req.query.base
+  let rel = req.query.rel
+  let price = req.query.price
+  let volume = req.query.volume
+  console.info("GET /doTaker " + base + " " + rel + " " + price + " " + volume)
+  if( base == undefined || rel == undefined || price == undefined || volume == undefined ){
+    console.log("doTaker undefined")    
+  }
+  buy(base, rel, price, volume).then(data => {
+    console.log("return to client" + data)
+    // res.json(JSON.stringify(data))
+    res.json(data)
+  })
+})
+
+app.options("/doMaker", cors())
+app.post("/doMaker", cors(), (req, res) => {
+  let base = req.query.base
+  let rel = req.query.rel
+  let price = req.query.price
+  let volume = req.query.volume
+  console.info("GET /doMaker " + base + " " + rel + " " + price + " " + volume)
+  if( base == undefined || rel == undefined || price == undefined || volume == undefined ){
+    console.log("doMaker undefined")    
+  }
+  setPrice(base, rel, price, volume).then(data => {
+    console.log("return to client" + data)
+    // res.json(JSON.stringify(data))
+    res.json(data)
+  })
+})
+
 app.options("/getMarket", cors())
 app.post("/getMarket", cors(), (req, res) => {
-  console.info("GET /connectcoin " + req.query.base + " " + req.query.rel)
+  console.info("GET /getMarket " + req.query.base + " " + req.query.rel)
   getMarket(req.query.base, req.query.rel).then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
@@ -300,7 +344,27 @@ app.get("/dummy/coinsenabled", cors(), (req, res) => {
   )
 })
 
-
+// mm2 my_recent_swaps to get recent swaps
+function getRecentSwaps(uuid = null, userpass = up) {
+  // function getEnabledCoins(userpass = up) {
+  console.log("getRecentSwaps")
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "my_recent_swaps",
+    uuid: uuid,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  // const mmres = sendRequest(requestData)
+  // console.info(mmres)
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))
+}
 
 // mm2 temp stuff until message passing fixed
 function getEnabledCoins(userpass = up) {
@@ -353,6 +417,51 @@ function connectCoin(coin, servers, userpass = up) {
     })
     .catch(err => console.error(err))
 
+}
+
+// be an alice (taker)
+function buy(base, rel, price, volume, userpass = up){
+  console.log("buy (base,rel,price,volume): (" + base + "," + rel + "," + price + "," + volume + ")")
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "buy",
+    base: base,
+    rel: rel,
+    price: price,
+    volume: volume,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))  
+}
+
+// be a bob (maker)
+function setPrice(base, rel, price, volume, userpass = up){
+  console.log("buy (base,rel,price,volume): (" + base + "," + rel + "," + price + "," + volume + ")")
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "setprice",
+    base: base,
+    rel: rel,
+    price: price,
+    volume: volume,
+    cancel_previous: false,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))  
 }
 
 // connect coin with electrum server
