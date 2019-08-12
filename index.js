@@ -11,7 +11,7 @@ const bodyParser = require('body-parser')
 const axios = require('axios');
 const fs = require('fs');
 let liveConfig = fsGetConfig()
-const up = "yVBU9EO0bCaluY4mt23JBHg4fNR7qKAM";
+const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx";
 app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -87,8 +87,9 @@ function getCEXPrices() {
         if (config[key].binance) {
           axiosGET("https://api.binance.com/api/v3/ticker/price?symbol=" + config[key].ticker + "BTC").then(data => {
 
-            console.log(data)
+            // console.log(data)
             config[key].cexprice = data.price
+            config[key].price = data.price
             // console.log(config)
             liveConfig = config
             console.log(liveConfig)
@@ -99,8 +100,9 @@ function getCEXPrices() {
           //https://api.bittrex.com/api/v1.1/public/getticker?market=BTC-KMD
           axiosGET("https://api.bittrex.com/api/v1.1/public/getticker?market=BTC-" + config[key].ticker).then(data => {
 
-            console.log(data)
+            // console.log(data)
             config[key].cexpricebittrex = parseFloat(data.result.Last)
+            config[key].price = parseFloat(data.result.Last)
             // console.log(config)
             liveConfig = config
             console.log(liveConfig)
@@ -111,8 +113,9 @@ function getCEXPrices() {
           //https://api.coinpaprika.com/v1/price-converter?base_currency_id=kmd-komodo&quote_currency_id=btc-bitcoin&amount=1
           axiosGET("https://api.coinpaprika.com/v1/price-converter?base_currency_id=" + config[key].papid + "&quote_currency_id=btc-bitcoin&amount=1").then(data => {
 
-            console.log(data)
+            // console.log(data)
             config[key].apipricepaprika = parseFloat(data.price)
+            config[key].price = parseFloat(data.price)
             // console.log(config)
             liveConfig = config
             console.log(liveConfig)
@@ -239,6 +242,144 @@ app.get("/getBalance", cors(), (req, res) => {
   })
 })
 
+app.options("/getOrders", cors())
+app.get("/getOrders", cors(), (req, res) => {
+  console.info("GET /getOrders ")
+  getOrders().then(data => {
+    // res.json(JSON.stringify(data))
+    // data = {
+    //   result: {
+    //     maker_orders: {
+    //       "fedd5261-a57e-4cbf-80ac-b3507045e140": {
+    //         base: "BEER",
+    //         created_at: 1560529042434,
+    //         available_amount: "1",
+    //         cancellable: true,
+    //         matches: {
+    //           "60aaacca-ed31-4633-9326-c9757ea4cf78": {
+    //             connect: {
+    //               dest_pub_key:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               maker_order_uuid:
+    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
+    //               method: "connect",
+    //               sender_pubkey:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
+    //             },
+    //             connected: {
+    //               dest_pub_key:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               maker_order_uuid:
+    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
+    //               method: "connected",
+    //               sender_pubkey:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
+    //             },
+    //             last_updated: 1560529572571,
+    //             request: {
+    //               action: "Buy",
+    //               base: "BEER",
+    //               base_amount: "1",
+    //               dest_pub_key:
+    //                 "0000000000000000000000000000000000000000000000000000000000000000",
+    //               method: "request",
+    //               rel: "PIZZA",
+    //               rel_amount: "1",
+    //               sender_pubkey:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
+    //             },
+    //             reserved: {
+    //               base: "BEER",
+    //               base_amount: "1",
+    //               dest_pub_key:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               maker_order_uuid:
+    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
+    //               method: "reserved",
+    //               rel: "PIZZA",
+    //               rel_amount: "1",
+    //               sender_pubkey:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
+    //             }
+    //           }
+    //         },
+    //         max_base_vol: "1",
+    //         min_base_vol: "0",
+    //         price: "1",
+    //         rel: "PIZZA",
+    //         started_swaps: ["60aaacca-ed31-4633-9326-c9757ea4cf78"],
+    //         uuid: "fedd5261-a57e-4cbf-80ac-b3507045e140"
+    //       }
+    //     },
+    //     taker_orders: {
+    //       "45252de5-ea9f-44ae-8b48-85092a0c99ed": {
+    //         created_at: 1560529048998,
+    //         cancellable: true,
+    //         matches: {
+    //           "15922925-cc46-4219-8cbd-613802e17797": {
+    //             connect: {
+    //               dest_pub_key:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               maker_order_uuid:
+    //                 "15922925-cc46-4219-8cbd-613802e17797",
+    //               method: "connect",
+    //               sender_pubkey:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
+    //             },
+    //             connected: {
+    //               dest_pub_key:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               maker_order_uuid:
+    //                 "15922925-cc46-4219-8cbd-613802e17797",
+    //               method: "connected",
+    //               sender_pubkey:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
+    //             },
+    //             last_updated: 1560529049477,
+    //             reserved: {
+    //               base: "BEER",
+    //               base_amount: "1",
+    //               dest_pub_key:
+    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //               maker_order_uuid:
+    //                 "15922925-cc46-4219-8cbd-613802e17797",
+    //               method: "reserved",
+    //               rel: "ETOMIC",
+    //               rel_amount: "1",
+    //               sender_pubkey:
+    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
+    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
+    //             }
+    //           }
+    //         },
+    //         request: {
+    //           action: "Buy",
+    //           base: "BEER",
+    //           base_amount: "1",
+    //           dest_pub_key:
+    //             "0000000000000000000000000000000000000000000000000000000000000000",
+    //           method: "request",
+    //           rel: "ETOMIC",
+    //           rel_amount: "1",
+    //           sender_pubkey:
+    //             "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
+    //           uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    console.log("return to client" + JSON.stringify(data))
+    res.json(data)
+  })
+})
+
 app.options("/doTaker", cors())
 app.post("/doTaker", cors(), (req, res) => {
   let base = req.query.base
@@ -326,23 +467,44 @@ app.get("/getpaprikaprice", cors(), (req, res) => {
 });
 
 // dummy samples
-app.options("/dummy/coinsenabled", cors())
-app.get("/dummy/coinsenabled", cors(), (req, res) => {
-  console.info("GET /dummy/coinsenabled")
-  res.json(
-    JSON.stringify({
-      result: [{
-          address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
-          ticker: "MORTY"
-        },
-        {
-          address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
-          ticker: "RICK"
-        }
-      ]
+// app.options("/dummy/coinsenabled", cors())
+// app.get("/dummy/coinsenabled", cors(), (req, res) => {
+//   console.info("GET /dummy/coinsenabled")
+//   res.json(
+//     JSON.stringify({
+//       result: [{
+//           address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
+//           ticker: "MORTY"
+//         },
+//         {
+//           address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
+//           ticker: "RICK"
+//         }
+//       ]
+//     })
+//   )
+// })
+
+// mm2 my_recent_swaps to get recent swaps
+function getOrders(userpass = up) {
+  // function getEnabledCoins(userpass = up) {
+  console.log("getOrders")
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "my_orders",
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  // const mmres = sendRequest(requestData)
+  // console.info(mmres)
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
     })
-  )
-})
+    .catch(err => console.error(err))
+}
 
 // mm2 my_recent_swaps to get recent swaps
 function getRecentSwaps(uuid = null, userpass = up) {
