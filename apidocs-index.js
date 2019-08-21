@@ -1,37 +1,14 @@
-// ES6+ not supported in nodejs by default
-// import mm2 from './mm2rpc'
-// import express from "express"
-// import cors from "cors"
 
-// passing responses not working
-// const mm2 = require("./mm2rpc.js")
-// START
-const express = require("express")
-const cors = require("cors")
-const bodyParser = require('body-parser')
-const axios = require('axios');
-const fs = require('fs');
-let liveConfig = fsGetConfig()
-const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx";
-app = express();
-app.use(cors())
-app.use(bodyParser.json())
-
-// web server starting
-if (!module.parent) {
-  const port = process.env.PORT || 7780;
-
-  app.listen(port, () => {
-    console.log("Express server listening on port " + port + ".");
-    runloop();
-  });
-}
-// END
-
-// re-used functions
 /**
- * @apiName AxiosGET
- * @apiGroup Utility
+ * @api {BOT} axiosGET(url) axiosGET(url) 
+ * @apiExample {internal} Example usage:
+ * axiosGET("https://api.bittrex.com/api/v1.1/public/getticker?market=BTC-" + base).then(data => {
+ *   res.json(
+ *     data
+ *   );
+ * })
+ * @apiName axiosGET
+ * @apiGroup BotUtility
  *
  * @apiDescription Re-usable utility method.
  *
@@ -44,9 +21,11 @@ function axiosGET(url) {
 }
 
 /**
- * @api {post} / 
+ * @api {BOT} sleep(ms) sleep(ms) 
+ * @apiExample {internal} Example usage:
+ *   await sleep(2000);
  * @apiName sleep
- * @apiGroup Utility
+ * @apiGroup BotUtility
  *
  * @apiDescription A way to make nodejs sleep.
  *
@@ -59,9 +38,16 @@ function sleep(ms) {
 // marketmaker strategy update loop & order integrity
 
 /**
- * @api {post} / 
+ * @api {BOT} runloop() runloop() 
+ * @apiExample {internal} Example usage:
+ * async function runloop() {
+ *   console.log('Taking a break...');
+ *   await sleep(2000);
+ *   console.log('Ready to do stuff...');
+ *   bringOrdersToIntegrity()
+ * }
  * @apiName runloop
- * @apiGroup Orchestration
+ * @apiGroup BotOrchestration
  *
  * @apiDescription Runnable method that loops ad-infinitum keeping marketmaking user activities running.
  *
@@ -87,9 +73,14 @@ async function runloop() {
   }
 }
 /**
- * @api {post} / 
+ * @api {BOT} saveLiveConfig() saveLiveConfig() 
+ * @apiExample {internal} Example usage:
+ *   if (i == timeToSave) {
+ *     saveLiveConfig()
+ *     i = 0
+ *   }
  * @apiName saveLiveConfig
- * @apiGroup Utility
+ * @apiGroup BotUtility
  *
  * @apiDescription Writes the live config to a file so for persistence.
  *
@@ -107,9 +98,9 @@ function saveLiveConfig() {
 }
 
 /**
- * @api {post} / 
+ * @api {BOT} bringOrdersToIntegrity() bringOrdersToIntegrity() 
  * @apiName bringOrdersToIntegrity
- * @apiGroup Orchestration
+ * @apiGroup BotOrchestration
  *
  * @apiDescription Stub method that would normally call updated prices then apply the marketmaking strategy on live orders by adjusting prices.
  *
@@ -120,9 +111,15 @@ function bringOrdersToIntegrity() {
 }
 
 /**
- * @api {post} / 
+ * @api {BOT} getCEXPrices() getCEXPrices() 
+ * @apiExample {internal} Example usage:
+ * function bringOrdersToIntegrity() {
+ *   console.log("Bringing order to interity")
+ *   getCEXPrices()
+ * }
+ * 
  * @apiName getCEXPrices
- * @apiGroup Utility
+ * @apiGroup BotUtility
  *
  * @apiDescription Gets the price of the configured CEX & aggregator feeds, updating the live config to reflect market changes.
  */
@@ -176,9 +173,13 @@ function getCEXPrices() {
 }
 
 /**
- * @api {post} / 
+ * @api {BOT} getLiveConfig() getLiveConfig() 
+ * @apiExample {internal} Example usage:
+ * 
+ *   let contents = getLiveConfig()
+ * 
  * @apiName getLiveConfig
- * @apiGroup Utility
+ * @apiGroup BotUtility
  *
  * @apiDescription Safely gets the currently used configuration
  */
@@ -188,11 +189,7 @@ function getLiveConfig() {
 }
 
 /**
- * @api {post} / 
- * @apiName fsGetConfig
- * @apiGroup Utility
- *
- * @apiDescription Gets the config file from disk
+ * @apiIgnore Gets the config file from disk
  */
 function fsGetConfig() {
   return JSON.parse(fs.readFileSync('mmconfig.json', 'utf8'));
@@ -200,7 +197,7 @@ function fsGetConfig() {
 
 // url routes
 /**
- * @api {get} /config
+ * @api {get} /config /config
  * @apiName config
  * @apiGroup URLRoutes
  *
@@ -222,7 +219,7 @@ app.get("/config", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /config2
+ * @api {get} /config2 /config2 
  * @apiName config2
  * @apiGroup URLRoutes
  *
@@ -243,7 +240,7 @@ app.get("/config2", cors(), (req, res) => {
 });
 
 /**
- * @api {post} /config
+ * @api {post} /config /config 
  * @apiName config
  * @apiGroup URLRoutes
  *
@@ -272,12 +269,12 @@ app.post("/config", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /coinconfig
+ * @api {get} /coinconfig /coinconfig 
  * @apiName coinconfig
  * @apiGroup URLRoutes
  *
  * @apiParam {String} coin as a ticker symbol, e.g. KMD, BTC etc.
- * @apiDescription Gets the coin configuration (which for this PoC was separate to the app config)
+ * @apiDescription Gets the coin configuration (which for this PoC was a separate file to the app config file)
  */
 app.get("/coinconfig", cors(), (req, res) => {
   console.info("GET /coinconfig");
@@ -296,7 +293,7 @@ app.get("/coinconfig", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /coinsenabled
+ * @api {get} /coinsenabled /coinsenabled 
  * @apiName coinsenabled
  * @apiGroup URLRoutes
  *
@@ -314,7 +311,7 @@ app.get("/coinsenabled", cors(), (req, res) => {
 })
 
 /**
- * @api {post} /connectcoin
+ * @api {post} /connectcoin /connectcoin 
  * @apiName connectcoin
  * @apiGroup URLRoutes
  *
@@ -335,7 +332,7 @@ app.post("/connectcoin", cors(), (req, res) => {
 })
 
 /**
- * @api {get} /recentswaps
+ * @api {get} /recentswaps /recentswaps 
  * @apiName recentswaps
  * @apiGroup URLRoutes
  *
@@ -353,7 +350,7 @@ app.get("/recentswaps", cors(), (req, res) => {
 })
 
 /**
- * @api {get} /getBalance
+ * @api {get} /getBalance /getBalance 
  * @apiName getBalance
  * @apiGroup URLRoutes
  *
@@ -372,7 +369,7 @@ app.get("/getBalance", cors(), (req, res) => {
 })
 
 /**
- * @api {get} /getOrders
+ * @api {get} /getOrders /getOrders 
  * @apiName getOrders
  * @apiGroup URLRoutes
  *
@@ -518,7 +515,7 @@ app.get("/getOrders", cors(), (req, res) => {
 })
 
 /**
- * @api {post} /doTaker
+ * @api {post} /doTaker /doTaker 
  * @apiName doTaker
  * @apiGroup URLRoutes
  *
@@ -548,7 +545,7 @@ app.post("/doTaker", cors(), (req, res) => {
 })
 
 /**
- * @api {post} /doMaker
+ * @api {post} /doMaker /doMaker 
  * @apiName doMaker
  * @apiGroup URLRoutes
  *
@@ -578,7 +575,7 @@ app.post("/doMaker", cors(), (req, res) => {
 })
 
 /**
- * @api {post} /getMarket
+ * @api {post} /getMarket /getMarket 
  * @apiName getMarket
  * @apiGroup URLRoutes
  *
@@ -599,7 +596,7 @@ app.post("/getMarket", cors(), (req, res) => {
 })
 
 /**
- * @api {get} /getbittrexmarketprice
+ * @api {get} /getbittrexmarketprice /getbittrexmarketprice 
  * @apiName getbittrexmarketprice
  * @apiGroup URLRoutes
  *
@@ -620,7 +617,7 @@ app.get("/getbittrexmarketprice", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /getbinancemarketprice
+ * @api {get} /getbinancemarketprice /getbinancemarketprice 
  * @apiName getbinancemarketprice
  * @apiGroup URLRoutes
  *
@@ -641,7 +638,7 @@ app.get("/getbinancemarketprice", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /getbinancemarketdepth
+ * @api {get} /getbinancemarketdepth /getbinancemarketdepth 
  * @apiName getbinancemarketdepth
  * @apiGroup URLRoutes
  *
@@ -660,7 +657,7 @@ app.get("/getbinancemarketdepth", cors(), (req, res) => {
 });
 
 /**
- * @api {get} /getpaprikaprice
+ * @api {get} /getpaprikaprice /getpaprikaprice 
  * @apiName getpaprikaprice
  * @apiGroup URLRoutes
  *
@@ -700,7 +697,7 @@ app.get("/getpaprikaprice", cors(), (req, res) => {
 
 
 /**
- * @api {get} /getOrders
+ * @api {MM2} getOrders(userpass) getOrders(userpass)
  * @apiName getOrders
  * @apiGroup MarketmakerRequest
  *
@@ -727,7 +724,7 @@ function getOrders(userpass = up) {
 }
 
 /**
- * @api {get} /getRecentSwaps
+ * @api {MM2} getRecentSwaps(uuid,userpass) getRecentSwaps(uuid, userpass)
  * @apiName getRecentSwaps
  * @apiGroup MarketmakerRequest
  *
@@ -756,7 +753,7 @@ function getRecentSwaps(uuid = null, userpass = up) {
 }
 
 /**
- * @api {get} /getEnabledCoins
+ * @api {MM2} getEnabledCoins(userpass) getEnabledCoins(userpass)
  * @apiName getEnabledCoins
  * @apiGroup MarketmakerRequest
  *
@@ -783,7 +780,7 @@ function getEnabledCoins(userpass = up) {
 }
 
 /**
- * @api {get} /connectCoin
+ * @api {MM2} connectCoin(coin,servers,userpass) connectCoin(coin, servers, userpass)
  * @apiName connectCoin
  * @apiGroup MarketmakerRequest
  *
@@ -825,7 +822,7 @@ function connectCoin(coin, servers, userpass = up) {
 }
 
 /**
- * @api {get} /buy
+ * @api {MM2} buy(base,rel,price,volume,userpass) buy(base, rel, price, volume, userpass)
  * @apiName buy
  * @apiGroup MarketmakerRequest
  *
@@ -860,7 +857,7 @@ function buy(base, rel, price, volume, userpass = up){
 }
 
 /**
- * @api {get} /setPrice
+ * @api {MM2} setPrice(base,rel,price,volume,userpass) setPrice(base, rel, price, volume, userpass)
  * @apiName setPrice
  * @apiGroup MarketmakerRequest
  *
@@ -896,7 +893,7 @@ function setPrice(base, rel, price, volume, userpass = up){
 }
 
 /**
- * @api {get} /getBalance
+ * @api {MM2} getBalance(coin) getBalance(coin)
  * @apiName getBalance
  * @apiGroup MarketmakerRequest
  *
@@ -925,7 +922,7 @@ function getBalance(coin, userpass = up) {
 }
 
 /**
- * @api {get} /getMarket
+ * @api {MM2} getMarket(base,rel,userpass) getMarket(base, rel, userpass) 
  * @apiName getMarket
  * @apiGroup MarketmakerRequest
  *
