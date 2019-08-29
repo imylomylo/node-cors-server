@@ -12,7 +12,8 @@ const bodyParser = require('body-parser')
 const axios = require('axios');
 const fs = require('fs');
 let liveConfig = fsGetConfig()
-const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx";
+// const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx"
+const up = "ENe0RZmwSMWaxYpXIniHagIqiv3Ic7Sm"
 app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -578,6 +579,70 @@ app.post("/doMaker", cors(), (req, res) => {
 })
 
 /**
+ * @api {post} /cancelAllOrders
+ * @apiName cancelAllOrders
+ * @apiGroup URLRoutes
+ *
+ * 
+ * @apiDescription Calls marketmaker method to cancel all orders
+ * 
+ */
+app.options("/cancelAllOrders", cors())
+app.get("/cancelAllOrders", cors(), (req, res) => {
+  console.info("post /cancelAllOrders " )
+  cancel_all_orders("mockObj").then(data => {
+    console.log("return to client" + data)
+    res.json(data)
+  })
+})
+
+/**
+ * @api {post} /withdraw
+ * @apiName withdraw
+ * @apiGroup URLRoutes
+ *
+ * @apiParam {String} coin as a ticker symbol, e.g. KMD, BTC etc.
+ * @apiParam {String} to address sending to
+ * @apiParam {Number} price in coin e.g. 0.0777
+ * 
+ * @apiDescription Calls marketmaker method to perform action of AtomicDEX API.  Specifically this performs a mm2.withdraw()
+ * 
+ */
+app.options("/withdraw", cors())
+app.post("/withdraw", cors(), (req, res) => {
+  let coin = req.query.coin
+  let to = req.query.to
+  let amount = req.query.amount
+  console.info("post /withdraw " + coin + " " + to + " " + amount )
+  if( coin == undefined || to == undefined || amount == undefined ){
+    console.log("withdraw undefined")    
+  }
+  withdraw(coin, to, amount).then(data => {
+    console.log("return to client" + data)
+    res.json(data)
+  })
+})
+
+/**
+ * @api {get} /orderstatus
+ * @apiName orderstatus
+ * @apiGroup URLRoutes
+ *
+ * @apiParam {String} uuid the order uuid
+ * 
+ * @apiDescription Calls marketmaker method to get order status of AtomicDEX API.  Specifically this performs a mm2.order_status()
+ * 
+ */
+app.options("/orderstatus", cors())
+app.get("/orderstatus", cors(), (req, res) => {
+  console.info("GET /orderstatus " + req.query.uuid )
+  order_status(req.query.uuid).then(data => {
+    console.log("return to client" + data)
+    res.json(data)
+  })
+})
+
+/**
  * @api {post} /getMarket
  * @apiName getMarket
  * @apiGroup URLRoutes
@@ -585,7 +650,7 @@ app.post("/doMaker", cors(), (req, res) => {
  * @apiParam {String} base as a ticker symbol, e.g. KMD, BTC etc.
  * @apiParam {String} rel as a ticker symbol, e.g. KMD, BTC etc.
  * 
- * @apiDescription Calls marketmaker method to get information or perform action of AtomicDEX API.  Specifically this performs a mm2.buy()
+ * @apiDescription Calls marketmaker method to get information or perform action of AtomicDEX API.  Specifically this performs a mm2.getaaaa()
  * 
  */
 app.options("/getMarket", cors())
@@ -593,7 +658,6 @@ app.post("/getMarket", cors(), (req, res) => {
   console.info("GET /getMarket " + req.query.base + " " + req.query.rel)
   getMarket(req.query.base, req.query.rel).then(data => {
     console.log("return to client" + data)
-    // res.json(JSON.stringify(data))
     res.json(data)
   })
 })
@@ -896,6 +960,39 @@ function setPrice(base, rel, price, volume, userpass = up){
 }
 
 /**
+ * @api {get} /withdraw
+ * @apiName withdraw
+ * @apiGroup MarketmakerRequest
+ *
+ * @apiParam {String} coin
+ * @apiParam {String} to
+ * @apiParam {String} amount
+ * @apiParam {String} userpass default up set in config
+ * 
+ * @apiDescription mm2 be a bob (maker) by calling mm2 withdraw method
+ * 
+ */
+function withdraw(coin, to, amount, userpass = up){
+  console.log("withdraw (coin,to,amount): (" + coin + "," + to + "," + amount + "," + volume + ")")
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "withdraw",
+    coin: coin,
+    to: to,
+    amount: amount,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))  
+}
+
+/**
  * @api {get} /getBalance
  * @apiName getBalance
  * @apiGroup MarketmakerRequest
@@ -943,6 +1040,67 @@ function getMarket(base, rel, userpass = up) {
     method: "orderbook",
     base: base,
     rel: rel,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))
+
+}
+
+/**
+ * @api {get} /order_status
+ * @apiName order_status
+ * @apiGroup MarketmakerRequest
+ *
+ * @apiParam {String} uuid
+ * @apiParam {String} userpass default up set in config
+ * 
+ * @apiDescription mm2 orderbook method to get market data (orderbooks) for base/rel
+ * 
+ */
+function order_status(uuid, userpass = up) {
+  console.log("order_status: " + uuid )
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "order_status",
+    uuid: uuid,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))
+
+}
+
+/**
+ * @api {get} /cancel_all_orders
+ * @apiName cancel_all_orders
+ * @apiGroup MarketmakerRequest
+ *
+ * @apiParam {Object} cancelAll an object with attribute type set to All
+ * @apiParam {String} userpass default up set in config
+ * 
+ * @apiDescription mm2 orderbook method to cancel all orders
+ * 
+ */
+function cancel_all_orders(cancelAll, userpass = up) {
+  const objCancelAll = { type: 'All'};
+  console.log("cancel_all_orders: " )
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "cancel_all_orders",
+    cancel_by: objCancelAll,
     userpass: userpass,
     id: Date.now(),
     timeout: 3000
