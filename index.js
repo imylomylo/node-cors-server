@@ -13,7 +13,7 @@ const axios = require('axios');
 const fs = require('fs');
 let liveConfig = fsGetConfig()
 // const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx"
-const up = "ENe0RZmwSMWaxYpXIniHagIqiv3Ic7Sm"
+const up = "testing"
 app = express();
 app.use(cors())
 app.use(bodyParser.json())
