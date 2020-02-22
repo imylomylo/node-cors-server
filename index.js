@@ -579,6 +579,27 @@ app.post("/doMaker", cors(), (req, res) => {
 })
 
 /**
+ * @api {post} /cancelOrder
+ * @apiName cancelOrder
+ * @apiGroup URLRoutes
+ *
+ * 
+ * @apiDescription Calls marketmaker method to cancel all orders
+ * 
+ */
+app.options("/cancelOrder", cors())
+app.post("/cancelOrder", cors(), (req, res) => {
+  let uuid = req.query.uuid
+  console.info("post /cancelOrder "  + uuid )
+  cancel_order(uuid).then(data => {
+    console.log("return to client" + data)
+    res.json(data)
+  })
+})
+
+/**
+
+/**
  * @api {post} /cancelAllOrders
  * @apiName cancelAllOrders
  * @apiGroup URLRoutes
@@ -1101,6 +1122,37 @@ function cancel_all_orders(cancelAll, userpass = up) {
     jsonrpc: "2.0",
     method: "cancel_all_orders",
     cancel_by: objCancelAll,
+    userpass: userpass,
+    id: Date.now(),
+    timeout: 3000
+  };
+  return axios.post("http://127.0.0.1:7783", requestData)
+    .then(res => {
+      console.log(res.data)
+      return res.data
+    })
+    .catch(err => console.error(err))
+
+}
+
+/**
+ * @api {get} /cancel_order
+ * @apiName cancel__order
+ * @apiGroup MarketmakerRequest
+ *
+ * @apiParam {Object} cancelAll an object with attribute type set to All
+ * @apiParam {String} userpass default up set in config
+ * 
+ * @apiDescription mm2 orderbook method to cancel all orders
+ * 
+ */
+function cancel_order(uuid, userpass = up) {
+  const objCancelAll = { type: 'All'};
+  console.log("cancel_all_orders: " )
+  const requestData = {
+    jsonrpc: "2.0",
+    method: "cancel_order",
+    uuid: uuid,
     userpass: userpass,
     id: Date.now(),
     timeout: 3000
