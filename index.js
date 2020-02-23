@@ -78,10 +78,13 @@ async function runloop() {
   for (let i = 0; i < 10; i++) {
     await sleep(2000);
     if (i == 3) {
-      bringOrdersToIntegrity()
+      i = 3
+// disabled feature not used
+//      bringOrdersToIntegrity()
     }
     if (i == 9) {
-      saveLiveConfig()
+// disabled feature not used
+//      saveLiveConfig()
       i = 0
     }
     console.log(i);
