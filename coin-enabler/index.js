@@ -1,6 +1,5 @@
 'use strict';
 
-//const fs = require('fs');
 import fs from 'fs'
 import axios from 'axios'
 
@@ -17,28 +16,45 @@ fs.readFile('coins/coins', (err, data) => {
 // works
 //    console.log(coins);
 
-// works
-//let res = coins.find( x => x.coin === 'BAT')
+// works find single by coin
+//let res = coins.find( x => x.coin === 'RFOX')
 //console.log(res)
 	
-// works
-//let res = coins.filter( x => x.mm2 === 1)
-//console.log(res)
-
-// works erc20
+// works find single erc20
 //res = coins.find( x => x.coin === 'BUSD')
 //enable_etherc20(res.coin, res.etomic)
 
-res = coins.find( x => x.coin === 'RFOX')
-electrum = {}
-fs.readFile('coins/electrums/'+res.coin, (err, data) => {
-    if (err) throw err
-    electrum = JSON.parse(data)
-    console.log(res)
-    console.log(electrum)
-    enable_electrum(res.coin, electrum)
-})
+// works filter for mm2 enabled
+//let res = coins.filter( x => x.mm2 === 1)
+//console.log(res)
 
+// works filter coin & mm2 enabled
+//let onlycoin = coins.filter( x => !x.etomic )
+//res = onlycoin.filter( x => x.mm2 === 1)
+
+// works filter erc20 & mm2
+//let erc20 = coins.filter( x => x.etomic )
+//res = erc20.filter( x => x.mm2 === 1)
+
+// works loop through res
+//for( let i = 0 ; i < res.length ; i++){
+//  console.log("ERC20")
+//  console.log("COIN")
+//  console.log(res[i])
+//}
+
+// works add single coin
+//electrum = {}
+//fs.readFile('coins/electrums/'+res.coin, (err, data) => {
+//    if (err) throw err
+//    electrum = JSON.parse(data)
+//    console.log(res)
+//    console.log(electrum)
+//    enable_electrum(res.coin, electrum)
+//})
+
+// works add single erc20
+//    enable_erc20(res.coin, res.etomic)
 });
 
 const up = 'testing'
