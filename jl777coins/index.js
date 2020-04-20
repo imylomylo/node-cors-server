@@ -2,19 +2,23 @@
 
 import fs from 'fs'
 import axios from 'axios'
+const UP = 'testing'
 
-//let rawdata = fs.readFileSync('coins');
-//let coins = JSON.parse(rawdata);
-//console.log(coins);
+export default function jl777coins(__dirname) {
 
 let res = ''
 let electrum = ''
-fs.readFile('coins/coins', (err, data) => {
+fs.readFile(__dirname + '/jl777coins/coins/coins', (err, data) => {
     if (err) throw err;
     let coins = JSON.parse(data);
     
-// works
-//    console.log(coins);
+// ##################################################
+// INITIAL INVESTIGATION
+
+// works read file and print contents to screen
+//let rawdata = fs.readFileSync('coins');
+//let coins = JSON.parse(rawdata);
+//console.log(coins);
 
 // works find single by coin
 //let res = coins.find( x => x.coin === 'RFOX')
@@ -36,13 +40,6 @@ fs.readFile('coins/coins', (err, data) => {
 //let erc20 = coins.filter( x => x.etomic )
 //res = erc20.filter( x => x.mm2 === 1)
 
-// works loop through res
-//for( let i = 0 ; i < res.length ; i++){
-//  console.log("ERC20")
-//  console.log("COIN")
-//  console.log(res[i])
-//}
-
 // works add single coin
 //electrum = {}
 //fs.readFile('coins/electrums/'+res.coin, (err, data) => {
@@ -54,12 +51,51 @@ fs.readFile('coins/coins', (err, data) => {
 //})
 
 // works add single erc20
-//    enable_erc20(res.coin, res.etomic)
+//    enable_etherc20(res.coin, res.etomic)
+
+// ################################################
+
+// filter erc20 & mm2
+    let erc20 = coins.filter( x => x.etomic )
+    res = erc20.filter( x => x.mm2 === 1)
+
+// loop through ETH res
+    for( let i = 0 ; i < res.length ; i++){
+      console.log("ERC20")
+      console.log(res[i])
+      enable_etherc20(res[i].coin,res[i].etomic)
+    }
+
+// filter coin & mm2 enabled
+    let onlycoin = coins.filter( x => !x.etomic )
+    res = onlycoin.filter( x => x.mm2 === 1)
+
+// loop through COIN res
+    for( let i = 0 ; i < res.length ; i++){
+      console.log("COIN: " + res[i].coin)
+      electrum = ''
+      try { 
+      fs.readFile(__dirname + '/jl777coins/coins/electrums/'+res[i].coin, (err, data) => {
+        if (err) { 
+          console.error("ERROR: Likely no electrum for this coin. " + err.stack )
+          return
+        }
+        if (data != 'undefined') {
+          res[i].servers = JSON.parse(data)
+          console.log(res[i])
+          enable_electrum(res[i].coin,res[i].servers)
+        }
+      })
+      } catch(e) {
+        console.error("ERROR: Electrum file reading error for this coin. " + e)
+      }
+    }
+
 });
 
-const up = 'testing'
+}
 
-function enable_electrum(coin, servers, userpass = up) {
+function enable_electrum(coin, servers, userpass = UP) {
   console.log("enable electrum: " )
   const requestData = {
     jsonrpc: "2.0",
@@ -78,7 +114,7 @@ function enable_electrum(coin, servers, userpass = up) {
     .catch(err => console.error(err))
 }
 
-function enable_etherc20(coin, swap_contract_address, userpass = up) {
+function enable_etherc20(coin, swap_contract_address, userpass = UP) {
   console.log("enable eth/erc20: " )
   const requestData = {
     jsonrpc: "2.0",

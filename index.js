@@ -1,33 +1,30 @@
 // ES6+ not supported in nodejs by default
-// import mm2 from './mm2rpc'
-// import express from "express"
-// import cors from "cors"
-
-// passing responses not working
-// const mm2 = require("./mm2rpc.js")
-// START
-const express = require("express")
-const cors = require("cors")
-const bodyParser = require('body-parser')
-const axios = require('axios');
-const fs = require('fs');
-let liveConfig = fsGetConfig()
-// const up = "fLUfdB67ARM5UnIcb1NEuKCeSB5MXlBx"
+// put in package.json "type": "module"
+// then use node --experimental-modules index.js
+import jl777coins from './jl777coins/index.js'
+import mm2middleware from './mm2-middleware.js'
+import CoinGecko from 'coingecko-api'
+import express from "express"
+import cors from "cors"
+import bodyParser from 'body-parser'
+import axios from 'axios'
+import fs from 'fs'
 const up = "testing"
-app = express();
+let liveConfig = fsGetConfig()
+let app = express();
 app.use(cors())
 app.use(bodyParser.json())
 
 // web server starting
-if (!module.parent) {
-  const port = process.env.PORT || 7780;
-
-  app.listen(port, () => {
-    console.log("Express server listening on port " + port + ".");
-    runloop();
-  });
-}
+const port = process.env.PORT || 7780;
+app.listen(port, () => {
+  console.log("Express server listening on port " + port + ".")
+  jl777coins(process.cwd())
+  runloop()
+});
 // END
+
+// #############################################################
 
 // re-used functions
 /**
@@ -78,7 +75,7 @@ async function runloop() {
   for (let i = 0; i < 10; i++) {
     await sleep(2000);
     if (i == 3) {
-      i = 3
+      getCoinGeckoData()
 // disabled feature not used
 //      bringOrdersToIntegrity()
     }
@@ -90,6 +87,7 @@ async function runloop() {
     console.log(i);
   }
 }
+
 /**
  * @api {post} / 
  * @apiName saveLiveConfig
@@ -108,6 +106,175 @@ function saveLiveConfig() {
       console.log("JSON file has been saved.");
     }
   });
+}
+
+/**
+ * @api {post} / 
+ * @apiName saveJSON
+ * @apiGroup Utility
+ *
+ * @apiDescription Writes the JSON data to filesystem
+ *
+ */
+function saveJSON(data, filename) {
+  fs.writeFile(filename, JSON.stringify(data), 'utf8', function (err) {
+    if (err) {
+      console.log("An error occured while writing JSON Object to File.");
+      console.log(err);
+    } else {
+      console.log("JSON file has been saved.");
+    }
+  });
+}
+
+/**
+ * @api {post} / 
+ * @apiName getCoinGeckoData
+ * @apiGroup Utility
+ *
+ * @apiDescription Method that gets updated prices and CEX spreads for informational purposes.
+ *
+ */
+async function getCoinGeckoData() {
+  console.log("COIN GECKO BEGIN")
+  //const CoinGecko = require('coingecko-api')
+  const CoinGeckoClient = new CoinGecko()
+  let rawdata = {}
+  let data = {}
+  // check coingecko.js how the next section works out
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('komodo', {}) // KMD, komodo
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.KMD.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('verus-coin', {}) // VRSC, verus-coin
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.VRSC.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('chips', {}) // CHIPS, chips
+    data = rawdata
+//  data = {}
+//  data.current_prices = rawdata.data.market_data.current_price
+//  data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.CHIPS.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('litecoin', {}) // LTC, litecoin
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.LTC.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('bitcoin', {}) // BTC, bitcoin
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.BTC.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('dash', {}) // DASH, dash
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.DASH.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('dogecoin', {}) // DOGE, dogecoin
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.DOGE.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('digibyte', {}) // DGB, digibyte
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.DGB.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('zcash', {}) // ZEC, zcash
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.ZEC.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('ravencoin', {}) // RVN, ravencoin
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.RVN.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('hush', {}) // HUSH, hush
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.HUSH.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('utrum', {}) // OOT, utrum
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.OOT.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  try {
+    rawdata = await CoinGeckoClient.coins.fetch('qtum', {}) // QTUM, qtum
+    data = {}
+    data.current_prices = rawdata.data.market_data.current_price
+    data.cex_spreads = rawdata.data.tickers
+    saveJSON(data, "COINGECKO.QTUM.json")
+  } catch (error) {
+    console.log("HANDLED BETTER")
+  }
+
+  console.log("COIN GECKO END")
 }
 
 /**
@@ -310,7 +477,7 @@ app.get("/coinconfig", cors(), (req, res) => {
 app.options("/coinsenabled", cors())
 app.get("/coinsenabled", cors(), (req, res) => {
   console.info("GET /coinsenabled")
-  getEnabledCoins().then(data => {
+  mm2middleware.getEnabledCoins().then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -331,7 +498,7 @@ app.get("/coinsenabled", cors(), (req, res) => {
 app.options("/connectcoin", cors())
 app.post("/connectcoin", cors(), (req, res) => {
   console.info("GET /connectcoin " + req.query.coin + " " + req.query.servers)
-  connectCoin(req.query.coin, req.query.servers).then(data => {
+  mm2middleware.connectCoin(req.query.coin, req.query.servers).then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -349,7 +516,7 @@ app.post("/connectcoin", cors(), (req, res) => {
 app.options("/recentswaps", cors())
 app.get("/recentswaps", cors(), (req, res) => {
   console.info("GET /recentswaps")
-  getRecentSwaps().then(data => {
+  mm2middleware.getRecentSwaps().then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -368,7 +535,7 @@ app.get("/recentswaps", cors(), (req, res) => {
 app.options("/getBalance", cors())
 app.get("/getBalance", cors(), (req, res) => {
   console.info("GET /getBalance " + req.query.coin)
-  getBalance(req.query.coin).then(data => {
+  mm2middleware.getBalance(req.query.coin).then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -386,136 +553,7 @@ app.get("/getBalance", cors(), (req, res) => {
 app.options("/getOrders", cors())
 app.get("/getOrders", cors(), (req, res) => {
   console.info("GET /getOrders ")
-  getOrders().then(data => {
-    // res.json(JSON.stringify(data))
-    // data = {
-    //   result: {
-    //     maker_orders: {
-    //       "fedd5261-a57e-4cbf-80ac-b3507045e140": {
-    //         base: "BEER",
-    //         created_at: 1560529042434,
-    //         available_amount: "1",
-    //         cancellable: true,
-    //         matches: {
-    //           "60aaacca-ed31-4633-9326-c9757ea4cf78": {
-    //             connect: {
-    //               dest_pub_key:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               maker_order_uuid:
-    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
-    //               method: "connect",
-    //               sender_pubkey:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
-    //             },
-    //             connected: {
-    //               dest_pub_key:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               maker_order_uuid:
-    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
-    //               method: "connected",
-    //               sender_pubkey:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
-    //             },
-    //             last_updated: 1560529572571,
-    //             request: {
-    //               action: "Buy",
-    //               base: "BEER",
-    //               base_amount: "1",
-    //               dest_pub_key:
-    //                 "0000000000000000000000000000000000000000000000000000000000000000",
-    //               method: "request",
-    //               rel: "PIZZA",
-    //               rel_amount: "1",
-    //               sender_pubkey:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
-    //             },
-    //             reserved: {
-    //               base: "BEER",
-    //               base_amount: "1",
-    //               dest_pub_key:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               maker_order_uuid:
-    //                 "fedd5261-a57e-4cbf-80ac-b3507045e140",
-    //               method: "reserved",
-    //               rel: "PIZZA",
-    //               rel_amount: "1",
-    //               sender_pubkey:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               taker_order_uuid: "60aaacca-ed31-4633-9326-c9757ea4cf78"
-    //             }
-    //           }
-    //         },
-    //         max_base_vol: "1",
-    //         min_base_vol: "0",
-    //         price: "1",
-    //         rel: "PIZZA",
-    //         started_swaps: ["60aaacca-ed31-4633-9326-c9757ea4cf78"],
-    //         uuid: "fedd5261-a57e-4cbf-80ac-b3507045e140"
-    //       }
-    //     },
-    //     taker_orders: {
-    //       "45252de5-ea9f-44ae-8b48-85092a0c99ed": {
-    //         created_at: 1560529048998,
-    //         cancellable: true,
-    //         matches: {
-    //           "15922925-cc46-4219-8cbd-613802e17797": {
-    //             connect: {
-    //               dest_pub_key:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               maker_order_uuid:
-    //                 "15922925-cc46-4219-8cbd-613802e17797",
-    //               method: "connect",
-    //               sender_pubkey:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
-    //             },
-    //             connected: {
-    //               dest_pub_key:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               maker_order_uuid:
-    //                 "15922925-cc46-4219-8cbd-613802e17797",
-    //               method: "connected",
-    //               sender_pubkey:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
-    //             },
-    //             last_updated: 1560529049477,
-    //             reserved: {
-    //               base: "BEER",
-    //               base_amount: "1",
-    //               dest_pub_key:
-    //                 "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //               maker_order_uuid:
-    //                 "15922925-cc46-4219-8cbd-613802e17797",
-    //               method: "reserved",
-    //               rel: "ETOMIC",
-    //               rel_amount: "1",
-    //               sender_pubkey:
-    //                 "5a2f1c468b7083c4f7649bf68a50612ffe7c38b1d62e1ece3829ca88e7e7fd12",
-    //               taker_order_uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
-    //             }
-    //           }
-    //         },
-    //         request: {
-    //           action: "Buy",
-    //           base: "BEER",
-    //           base_amount: "1",
-    //           dest_pub_key:
-    //             "0000000000000000000000000000000000000000000000000000000000000000",
-    //           method: "request",
-    //           rel: "ETOMIC",
-    //           rel_amount: "1",
-    //           sender_pubkey:
-    //             "c213230771ebff769c58ade63e8debac1b75062ead66796c8d793594005f3920",
-    //           uuid: "45252de5-ea9f-44ae-8b48-85092a0c99ed"
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+  mm2middleware.getOrders().then(data => {
     console.log("return to client" + JSON.stringify(data))
     res.json(data)
   })
@@ -544,7 +582,7 @@ app.post("/doTaker", cors(), (req, res) => {
   if( base == undefined || rel == undefined || price == undefined || volume == undefined ){
     console.log("doTaker undefined")    
   }
-  buy(base, rel, price, volume).then(data => {
+  mm2middleware.buy(base, rel, price, volume).then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -574,7 +612,7 @@ app.post("/doMaker", cors(), (req, res) => {
   if( base == undefined || rel == undefined || price == undefined || volume == undefined ){
     console.log("doMaker undefined")    
   }
-  setPrice(base, rel, price, volume).then(data => {
+  mm2middleware.setPrice(base, rel, price, volume).then(data => {
     console.log("return to client" + data)
     // res.json(JSON.stringify(data))
     res.json(data)
@@ -594,7 +632,7 @@ app.options("/cancelOrder", cors())
 app.post("/cancelOrder", cors(), (req, res) => {
   let uuid = req.query.uuid
   console.info("post /cancelOrder "  + uuid )
-  cancel_order(uuid).then(data => {
+  mm2middleware.cancel_order(uuid).then(data => {
     console.log("return to client" + data)
     res.json(data)
   })
@@ -614,7 +652,7 @@ app.post("/cancelOrder", cors(), (req, res) => {
 app.options("/cancelAllOrders", cors())
 app.get("/cancelAllOrders", cors(), (req, res) => {
   console.info("post /cancelAllOrders " )
-  cancel_all_orders("mockObj").then(data => {
+  mm2middleware.cancel_all_orders("mockObj").then(data => {
     console.log("return to client" + data)
     res.json(data)
   })
@@ -641,7 +679,7 @@ app.post("/withdraw", cors(), (req, res) => {
   if( coin == undefined || to == undefined || amount == undefined ){
     console.log("withdraw undefined")    
   }
-  withdraw(coin, to, amount).then(data => {
+  mm2middlware.withdraw(coin, to, amount).then(data => {
     console.log("return to client" + data)
     res.json(data)
   })
@@ -660,7 +698,7 @@ app.post("/withdraw", cors(), (req, res) => {
 app.options("/orderstatus", cors())
 app.get("/orderstatus", cors(), (req, res) => {
   console.info("GET /orderstatus " + req.query.uuid )
-  order_status(req.query.uuid).then(data => {
+  mm2middleware.order_status(req.query.uuid).then(data => {
     console.log("return to client" + data)
     res.json(data)
   })
@@ -680,9 +718,35 @@ app.get("/orderstatus", cors(), (req, res) => {
 app.options("/getMarket", cors())
 app.post("/getMarket", cors(), (req, res) => {
   console.info("GET /getMarket " + req.query.base + " " + req.query.rel)
-  getMarket(req.query.base, req.query.rel).then(data => {
+  mm2middleware.getMarket(req.query.base, req.query.rel).then(data => {
     console.log("return to client" + data)
     res.json(data)
+  })
+})
+
+/**
+ * @api {get} /getPriceCoinGecko
+ * @apiName getpricecoingecko
+ * @apiGroup URLRoutes
+ *
+ * @apiParam {String} base as a ticker symbol, e.g. KMD, BTC etc.
+ * 
+ * @apiDescription Calls cached feed on server for USD price (others available)
+ * 
+ */
+app.options("/getpricecoingecko", cors())
+app.get("/getpricecoingecko", cors(), (req, res) => {
+  console.info("GET /getpricecoingecko")
+  let coin = req.query.coin
+  fs.readFile('./COINGECKO.'+ coin + '.json', (err, data) => {
+    if (err) {
+	console.log("ERROR: Coin gecko price file not available")
+        data = '{"error": "not available"}'
+    }
+    data = JSON.parse(data)
+    res.json(
+      data
+    )
   })
 })
 
@@ -767,404 +831,3 @@ app.get("/getpaprikaprice", cors(), (req, res) => {
   })
 });
 
-// dummy samples
-// app.options("/dummy/coinsenabled", cors())
-// app.get("/dummy/coinsenabled", cors(), (req, res) => {
-//   console.info("GET /dummy/coinsenabled")
-//   res.json(
-//     JSON.stringify({
-//       result: [{
-//           address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
-//           ticker: "MORTY"
-//         },
-//         {
-//           address: "RG7mQ5unWefSiiujFouxqSN6Go7WT5hBqq",
-//           ticker: "RICK"
-//         }
-//       ]
-//     })
-//   )
-// })
-
-
-/**
- * @api {get} /getOrders
- * @apiName getOrders
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 my_orders to get current orders
- * 
- */
-function getOrders(userpass = up) {
-  console.log("getOrders")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "my_orders",
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-}
-
-/**
- * @api {get} /getRecentSwaps
- * @apiName getRecentSwaps
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} userpass default up set in config
- * @apiParam {String} uuid  default is null to get all
- * 
- * @apiDescription mm2 my_recent_swaps to get current orders
- * 
- */
-function getRecentSwaps(uuid = null, userpass = up) {
-  console.log("getRecentSwaps")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "my_recent_swaps",
-    uuid: uuid,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-}
-
-/**
- * @api {get} /getEnabledCoins
- * @apiName getEnabledCoins
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 get_enabled_coins to get current state of enabled coins
- * 
- */
-function getEnabledCoins(userpass = up) {
-  console.log("GetEnabledCoins")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "get_enabled_coins",
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-}
-
-/**
- * @api {get} /connectCoin
- * @apiName connectCoin
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} coin default up set in config
- * @apiParam {Object[]} servers passed from previous lookup
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 connect coin with electrum server
- * 
- */
-function connectCoin(coin, servers, userpass = up) {
-  console.log("connect coin: " + coin + " with servers " + servers)
-  const serversMORTY = [{
-      url: "electrum1.cipig.net:10018"
-    },
-    {
-      url: "electrum2.cipig.net:10018"
-    },
-    {
-      url: "electrum3.cipig.net:10018"
-    }
-  ]
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "electrum",
-    coin: coin,
-    servers: JSON.parse(servers),
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-
-}
-
-/**
- * @api {get} /buy
- * @apiName buy
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} base
- * @apiParam {String} rel
- * @apiParam {String} price
- * @apiParam {String} volume
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 be an alice (taker) by calling mm2 buy method
- * 
- */
-function buy(base, rel, price, volume, userpass = up){
-  console.log("buy (base,rel,price,volume): (" + base + "," + rel + "," + price + "," + volume + ")")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "buy",
-    base: base,
-    rel: rel,
-    price: price,
-    volume: volume,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))  
-}
-
-/**
- * @api {get} /setPrice
- * @apiName setPrice
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} base
- * @apiParam {String} rel
- * @apiParam {String} price
- * @apiParam {String} volume
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 be a bob (maker) by calling mm2 setprice method
- * 
- */
-function setPrice(base, rel, price, volume, userpass = up){
-  console.log("buy (base,rel,price,volume): (" + base + "," + rel + "," + price + "," + volume + ")")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "setprice",
-    base: base,
-    rel: rel,
-    price: price,
-    volume: volume,
-    cancel_previous: false,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))  
-}
-
-/**
- * @api {get} /withdraw
- * @apiName withdraw
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} coin
- * @apiParam {String} to
- * @apiParam {String} amount
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 be a bob (maker) by calling mm2 withdraw method
- * 
- */
-function withdraw(coin, to, amount, userpass = up){
-  console.log("withdraw (coin,to,amount): (" + coin + "," + to + "," + amount + "," + volume + ")")
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "withdraw",
-    coin: coin,
-    to: to,
-    amount: amount,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))  
-}
-
-/**
- * @api {get} /getBalance
- * @apiName getBalance
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} coin
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 my_balance to get current balance of coin
- * 
- */
-function getBalance(coin, userpass = up) {
-  console.log("getBalance coin: " + coin)
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "my_balance",
-    coin: coin,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-}
-
-/**
- * @api {get} /getMarket
- * @apiName getMarket
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} base
- * @apiParam {String} rel
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 orderbook method to get market data (orderbooks) for base/rel
- * 
- */
-function getMarket(base, rel, userpass = up) {
-  console.log("market data: " + base + " / " + rel)
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "orderbook",
-    base: base,
-    rel: rel,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-
-}
-
-/**
- * @api {get} /order_status
- * @apiName order_status
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {String} uuid
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 orderbook method to get market data (orderbooks) for base/rel
- * 
- */
-function order_status(uuid, userpass = up) {
-  console.log("order_status: " + uuid )
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "order_status",
-    uuid: uuid,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-
-}
-
-/**
- * @api {get} /cancel_all_orders
- * @apiName cancel_all_orders
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {Object} cancelAll an object with attribute type set to All
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 orderbook method to cancel all orders
- * 
- */
-function cancel_all_orders(cancelAll, userpass = up) {
-  const objCancelAll = { type: 'All'};
-  console.log("cancel_all_orders: " )
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "cancel_all_orders",
-    cancel_by: objCancelAll,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-
-}
-
-/**
- * @api {get} /cancel_order
- * @apiName cancel__order
- * @apiGroup MarketmakerRequest
- *
- * @apiParam {Object} cancelAll an object with attribute type set to All
- * @apiParam {String} userpass default up set in config
- * 
- * @apiDescription mm2 orderbook method to cancel all orders
- * 
- */
-function cancel_order(uuid, userpass = up) {
-  const objCancelAll = { type: 'All'};
-  console.log("cancel_all_orders: " )
-  const requestData = {
-    jsonrpc: "2.0",
-    method: "cancel_order",
-    uuid: uuid,
-    userpass: userpass,
-    id: Date.now(),
-    timeout: 3000
-  };
-  return axios.post("http://127.0.0.1:7783", requestData)
-    .then(res => {
-      console.log(res.data)
-      return res.data
-    })
-    .catch(err => console.error(err))
-
-}

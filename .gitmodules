@@ -1,3 +1,6 @@
 [submodule "coin-enabler/coins"]
 	path = coin-enabler/coins
 	url = https://github.com/jl777/coins
+[submodule "jl777coins/coins"]
+	path = jl777coins/coins
+	url = https://github.com/jl777/coins
