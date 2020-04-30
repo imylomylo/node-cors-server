@@ -1,6 +1,7 @@
 // ES6+ not supported in nodejs by default
 // put in package.json "type": "module"
 // then use node --experimental-modules index.js
+import 'dotenv/config.js'
 import jl777coins from './jl777coins/index.js'
 import mm2middleware from './mm2-middleware.js'
 import CoinGecko from 'coingecko-api'
@@ -574,6 +575,9 @@ app.get("/getOrders", cors(), (req, res) => {
  */
 app.options("/doTaker", cors())
 app.post("/doTaker", cors(), (req, res) => {
+  if(process.env.ME_PUBLIC) {
+    res.send(405, 'Method Not Allowed')
+  }
   let base = req.query.base
   let rel = req.query.rel
   let price = req.query.price
@@ -604,6 +608,9 @@ app.post("/doTaker", cors(), (req, res) => {
  */
 app.options("/doMaker", cors())
 app.post("/doMaker", cors(), (req, res) => {
+  if(process.env.ME_PUBLIC) {
+    res.send(405, 'Method Not Allowed')
+  }
   let base = req.query.base
   let rel = req.query.rel
   let price = req.query.price
@@ -630,6 +637,9 @@ app.post("/doMaker", cors(), (req, res) => {
  */
 app.options("/cancelOrder", cors())
 app.post("/cancelOrder", cors(), (req, res) => {
+  if(process.env.ME_PUBLIC) {
+    res.send(405, 'Method Not Allowed')
+  }
   let uuid = req.query.uuid
   console.info("post /cancelOrder "  + uuid )
   mm2middleware.cancel_order(uuid).then(data => {
@@ -651,6 +661,9 @@ app.post("/cancelOrder", cors(), (req, res) => {
  */
 app.options("/cancelAllOrders", cors())
 app.get("/cancelAllOrders", cors(), (req, res) => {
+  if(process.env.ME_PUBLIC) {
+    res.send(405, 'Method Not Allowed')
+  }
   console.info("post /cancelAllOrders " )
   mm2middleware.cancel_all_orders("mockObj").then(data => {
     console.log("return to client" + data)
@@ -672,6 +685,9 @@ app.get("/cancelAllOrders", cors(), (req, res) => {
  */
 app.options("/withdraw", cors())
 app.post("/withdraw", cors(), (req, res) => {
+  if(process.env.ME_PUBLIC) {
+    res.send(405, 'Method Not Allowed')
+  }
   let coin = req.query.coin
   let to = req.query.to
   let amount = req.query.amount

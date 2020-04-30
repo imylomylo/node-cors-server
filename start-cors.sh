@@ -1,3 +1,3 @@
-#1/bin/bash
+#!/bin/bash
 cd /node-cors-server
-node index.js > server.log &
+node --experimental-modules index.js > server.log &

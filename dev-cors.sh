@@ -1,2 +1,2 @@
-#1/bin/bash
-node index.js > server.log &
+#!/bin/bash
+node --experimental-modules index.js > server.log &
