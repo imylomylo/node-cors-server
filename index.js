@@ -20,7 +20,7 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 7780;
 app.listen(port, () => {
   console.log("Express server listening on port " + port + ".")
-  jl777coins(process.cwd())
+//  jl777coins(process.cwd())
   runloop()
 });
 // END
@@ -67,9 +67,10 @@ function sleep(ms) {
  */
 async function runloop() {
 
-  console.log('Taking a break...');
-  await sleep(2000);
-  console.log('Two seconds later, showing sleep in a loop...');
+  console.log('Taking a break...')
+  await sleep(5000)
+  jl777coins(process.cwd())
+  console.log('Five seconds later, showing sleep in a loop...')
 
   let i = 0
   // Sleep in loop
