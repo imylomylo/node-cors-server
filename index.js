@@ -12,6 +12,7 @@ import axios from 'axios'
 import fs from 'fs'
 const up = "testing"
 let liveConfig = fsGetConfig()
+let me_public = true
 let app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -20,6 +21,12 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 7780;
 app.listen(port, () => {
   console.log("Express server listening on port " + port + ".")
+  console.log("ME_PUBLIC is " + process.env.ME_PUBLIC)
+  if(process.env.ME_PUBLIC === 'true'){
+    me_public = true
+  }else{
+    me_public = false
+  }
 //  jl777coins(process.cwd())
   runloop()
 });
@@ -576,7 +583,7 @@ app.get("/getOrders", cors(), (req, res) => {
  */
 app.options("/doTaker", cors())
 app.post("/doTaker", cors(), (req, res) => {
-  if(process.env.ME_PUBLIC) {
+  if(me_public) {
     res.send(405, 'Method Not Allowed')
   }
   let base = req.query.base
@@ -609,7 +616,7 @@ app.post("/doTaker", cors(), (req, res) => {
  */
 app.options("/doMaker", cors())
 app.post("/doMaker", cors(), (req, res) => {
-  if(process.env.ME_PUBLIC) {
+  if(me_public) {
     res.send(405, 'Method Not Allowed')
   }
   let base = req.query.base
@@ -638,7 +645,7 @@ app.post("/doMaker", cors(), (req, res) => {
  */
 app.options("/cancelOrder", cors())
 app.post("/cancelOrder", cors(), (req, res) => {
-  if(process.env.ME_PUBLIC) {
+  if(me_public) {
     res.send(405, 'Method Not Allowed')
   }
   let uuid = req.query.uuid
@@ -662,7 +669,7 @@ app.post("/cancelOrder", cors(), (req, res) => {
  */
 app.options("/cancelAllOrders", cors())
 app.get("/cancelAllOrders", cors(), (req, res) => {
-  if(process.env.ME_PUBLIC) {
+  if(me_public) {
     res.send(405, 'Method Not Allowed')
   }
   console.info("post /cancelAllOrders " )
@@ -686,7 +693,7 @@ app.get("/cancelAllOrders", cors(), (req, res) => {
  */
 app.options("/withdraw", cors())
 app.post("/withdraw", cors(), (req, res) => {
-  if(process.env.ME_PUBLIC) {
+  if(me_public) {
     res.send(405, 'Method Not Allowed')
   }
   let coin = req.query.coin
